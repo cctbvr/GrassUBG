@@ -1,26 +1,97 @@
-        /* PROXY SEARCH LAUNCHER */
-        function openProxy(url) {
-            if (window.grassProxy) {
-                window.grassProxy.openInProxy(url);
-            } else {
-                // Fallback if proxy not initialized
-                openGame('Web Proxy', url);
-            }
-        }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GrassUBG — Proxy</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="" crossorigin="anonymous">
+</head>
+<body>
+  <!-- Minimal proxy UI so GrassProxy can be published -->
+  <main>
+    <h1>GrassUBG — Web Proxy</h1>
+    <div>
+      <input id="main-proxy-input" type="text" placeholder="Enter a URL or host (example.com)" style="width:60%" />
+      <button id="main-proxy-go">Open Proxy</button>
+    </div>
+  </main>
 
-        const proxyInput = document.getElementById('main-proxy-input');
-        if (proxyInput) {
-            proxyInput.addEventListener('keydown', function(e) {
-                if(e.key === 'Enter') {
-                    let val = this.value.trim();
-                    if(val !== '') {
-                        // Standardize URL input
-                        if(!val.startsWith('http://') && !val.startsWith('https://')) {
-                            val = 'https://' + val; 
-                        }
-                        openProxy(val);
-                        this.value = '';
-                    }
-                }
-            });
+  <!-- Game viewer overlay (used by proxy-config.js/openInProxy) -->
+  <div id="game-viewer-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999;">
+    <div style="width:90%; height:90%; background:#fff; border-radius:6px; overflow:hidden; display:flex; flex-direction:column;">
+      <div id="game-viewer-title" style="padding:8px; background:#222; color:#fff; display:flex; align-items:center; gap:8px;"></div>
+      <iframe id="game-iframe" style="flex:1; border:0;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+      <div style="padding:8px; text-align:right; background:#f5f5f5;">
+        <button id="game-viewer-close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load the proxy configuration (initializes window.grassProxy) -->
+  <script src="/proxy-config.js" defer></script>
+
+  <!-- Proxy launcher script: waits for DOM and then wires input/button -->
+  <script>
+    // PROXY SEARCH LAUNCHER
+    document.addEventListener('DOMContentLoaded', function () {
+      // helper to open URL via proxy or fallback
+      function openProxy(url) {
+        if (window.grassProxy && typeof window.grassProxy.openInProxy === 'function') {
+          window.grassProxy.openInProxy(url);
+        } else {
+          // Fallback if proxy not initialized
+          if (typeof openGame === 'function') {
+            openGame('Web Proxy', url);
+          } else {
+            // final fallback: open in a new tab
+            const encoded = url.startsWith('http://') || url.startsWith('https://') ? url : 'https://' + url;
+            window.open(encoded, '_blank');
+          }
         }
+      }
+
+      const proxyInput = document.getElementById('main-proxy-input');
+      const proxyGo = document.getElementById('main-proxy-go');
+      const gameViewer = document.getElementById('game-viewer-overlay');
+      const gameIframe = document.getElementById('game-iframe');
+      const gameViewerTitle = document.getElementById('game-viewer-title');
+      const gameViewerClose = document.getElementById('game-viewer-close');
+
+      function handleOpen(val) {
+        let url = val.trim();
+        if (url === '') return;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        openProxy(url);
+        if (proxyInput) proxyInput.value = '';
+      }
+
+      if (proxyInput) {
+        proxyInput.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            handleOpen(this.value);
+          }
+        });
+      }
+
+      if (proxyGo) {
+        proxyGo.addEventListener('click', function () {
+          if (proxyInput) handleOpen(proxyInput.value);
+        });
+      }
+
+      // Close overlay button
+      if (gameViewerClose) {
+        gameViewerClose.addEventListener('click', function () {
+          if (gameViewer) gameViewer.style.display = 'none';
+          if (gameIframe) gameIframe.src = 'about:blank';
+        });
+      }
+
+      // If proxy-config sets window.grassProxy and openInProxy sets iframe src directly,
+      // we don't need to wire anything else here. This UI gives a safe fallback.
+    });
+  </script>
+</body>
+</html>
