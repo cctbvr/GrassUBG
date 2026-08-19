@@ -6,7 +6,7 @@
 class GrassProxy {
     constructor() {
         // Ultraviolet proxy endpoint - use your own deployment
-        this.proxyEndpoint = this.detectProxyEndpoint();
+        this.proxyEndpoint = 'https://grass-ubg-git-main-cctbvrs-projects.vercel.app/uv/';
         this.cacheMap = new Map();
     }
 
