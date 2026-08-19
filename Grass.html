@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>GrassUBG — Proxy</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
   <!-- Minimal proxy UI so GrassProxy can be published -->
@@ -20,7 +20,7 @@
   <div id="game-viewer-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999;">
     <div style="width:90%; height:90%; background:#fff; border-radius:6px; overflow:hidden; display:flex; flex-direction:column;">
       <div id="game-viewer-title" style="padding:8px; background:#222; color:#fff; display:flex; align-items:center; gap:8px;"></div>
-      <iframe id="game-iframe" style="flex:1; border:0;" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+      <iframe id="game-iframe" style="flex:1; border:0;" sandbox="allow-scripts allow-forms allow-popups"></iframe>
       <div style="padding:8px; text-align:right; background:#f5f5f5;">
         <button id="game-viewer-close">Close</button>
       </div>
@@ -28,7 +28,7 @@
   </div>
 
   <!-- Load the proxy configuration (initializes window.grassProxy) -->
-  <script src="/proxy-config.js" defer></script>
+  <script src="./proxy-config.js" defer></script>
 
   <!-- Proxy launcher script: waits for DOM and then wires input/button -->
   <script>
